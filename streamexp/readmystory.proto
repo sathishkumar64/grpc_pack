@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package streamexp;
+
+message ReadStoryVO {
+    string course = 1;
+    string tutorName = 2;
+    bool status =3;
+}
+
+message RequestReadStory {
+    string course = 1;   
+}
+
+service ReadMyStoryService{
+    rpc GetStory (RequestReadStory) returns (ReadStoryVO);
+    rpc ListOfStory (RequestReadStory) returns (stream ReadStoryVO);
+    rpc StoryStatus (stream RequestReadStory) returns (ReadStoryVO);
+    rpc FullStory (stream RequestReadStory) returns (stream ReadStoryVO);
+}
