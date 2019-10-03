@@ -3,19 +3,21 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"io"
+	"log"
+	"net"
+
 	"github.com/sathishkumar64/grpc_pack/streamexp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"io"
-	"log"
-	"net"
 )
 
-// ReadMyStoryServiceServer as interface
+// ReadServer as interface
 type ReadServer struct {
 }
-func generateStub() []byte{
+
+func generateStub() []byte {
 	var exampleData = []byte(`[{  
         "Course": "HTML",
         "TutorName": "BABU",
@@ -64,57 +66,54 @@ func generateStub() []byte{
 	return exampleData
 }
 
-
-
 //GetStory is used for get story service
 func (r ReadServer) GetStory(ctx context.Context, req *streamexp.RequestReadStory) (*streamexp.ReadStoryVO, error) {
-	log.Println("Getting inside.................",req.GetCourse())
+	log.Println("Getting inside.................", req.GetCourse())
 	switch req.GetCourse() {
 	case "GO":
 		aStudent := &streamexp.ReadStoryVO{
-			Course:   "GO",
+			Course:    "GO",
 			TutorName: "Sathish",
-			Status: true,
+			Status:    true,
 		}
 		return aStudent, nil
 	case "Java":
 		aStudent := &streamexp.ReadStoryVO{
-			Course:   "Java",
+			Course:    "Java",
 			TutorName: "BALU",
-			Status: true,
+			Status:    true,
 		}
 		return aStudent, nil
-	default :
+	default:
 		aStudent := &streamexp.ReadStoryVO{
-			Course:   "HTML",
+			Course:    "HTML",
 			TutorName: "BABU",
-			Status: true,
+			Status:    true,
 		}
 		return aStudent, nil
 	}
 }
 
+//ListOfStory service is used to display list of service
 func (r ReadServer) ListOfStory(req *streamexp.RequestReadStory, srv streamexp.ReadMyStoryService_ListOfStoryServer) error {
-	log.Println("Getting inside of ListOfStory.................",req.GetCourse())
+	log.Println("Getting inside of ListOfStory.................", req.GetCourse())
 	var savedFeatures []*streamexp.ReadStoryVO
 	var data []byte
-		data = generateStub()
+	data = generateStub()
 
 	if err := json.Unmarshal(data, &savedFeatures); err != nil {
 		log.Fatalf("Failed to load default Course Data: %v", err)
 	}
 	for _, course := range savedFeatures {
-			if err := srv.Send(course); err != nil {
-				return err
-			}
+		if err := srv.Send(course); err != nil {
+			return err
+		}
 	}
 	return nil
 
-
-
-
 }
 
+//StoryStatus service is used to display list of service
 func (r ReadServer) StoryStatus(srv streamexp.ReadMyStoryService_StoryStatusServer) error {
 	log.Println("Getting inside of StoryStatus.................")
 	var savedFeatures []*streamexp.ReadStoryVO
@@ -124,37 +123,35 @@ func (r ReadServer) StoryStatus(srv streamexp.ReadMyStoryService_StoryStatusServ
 	if err := json.Unmarshal(data, &savedFeatures); err != nil {
 		log.Fatalf("Failed to load default Course Data: %v", err)
 	}
-	/*var (
-			crsstatus bool
-			tutorName string
-		)*/
+	/*	var (
+		courseObj string
+		crsstatus bool
+		tutorName string
+	)*/
 
+	courseList := []string{}
 
-	for{
-
+	for {
 		courseObj, err := srv.Recv()
-		if courseObj.Course != "" {
-			/*for _, course := range savedFeatures {
-				if course.Course == courseObj.Course {
-					fmt.Printf("data.................%v %v ", course.Status, course.TutorName)
-						crsstatus = course.Status
-						tutorName = course.TutorName
 
-				}
-			}*/
-
-			if err == io.EOF {
-				log.Println("courseObj.Course................", courseObj.Course)
-				return srv.SendAndClose(&streamexp.ReadStoryVO{Course: courseObj.Course, TutorName: "Test", Status: false,})
-			}
-
-			if err != nil {
-				log.Fatalf("Failed reciving data %v", err)
-				return err
-			}
+		if &courseObj.Course != nil {
+			courseList = append(courseList, courseObj.Course)
 		}
+
+		//log.Println("courseList................", courseList)
+
+		if err == io.EOF {
+			log.Println("courseObj.Course inside................", courseObj)
+			return srv.SendAndClose(&streamexp.ReadStoryVO{Course: "Python", TutorName: "Dobakur", Status: false})
+		}
+
+		if err != nil {
+			log.Fatalf("Failed reciving data %v", err)
+			return err
+		}
+
 	}
-	return nil
+	//return nil
 }
 
 func (r ReadServer) FullStory(srv streamexp.ReadMyStoryService_FullStoryServer) error {
