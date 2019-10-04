@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
 
 	"github.com/sathishkumar64/grpc_pack/streamexp"
 	"google.golang.org/grpc"
@@ -116,45 +117,25 @@ func (r ReadServer) ListOfStory(req *streamexp.RequestReadStory, srv streamexp.R
 //StoryStatus service is used to display list of service
 func (r ReadServer) StoryStatus(srv streamexp.ReadMyStoryService_StoryStatusServer) error {
 	log.Println("Getting inside of StoryStatus.................")
-	var savedFeatures []*streamexp.ReadStoryVO
-	var data []byte
-	data = generateStub()
-
-	if err := json.Unmarshal(data, &savedFeatures); err != nil {
-		log.Fatalf("Failed to load default Course Data: %v", err)
-	}
-	/*	var (
-		courseObj string
-		crsstatus bool
-		tutorName string
-	)*/
-
 	courseList := []string{}
-
 	for {
 		courseObj, err := srv.Recv()
-
-		if &courseObj.Course != nil {
+		if err != io.EOF {
 			courseList = append(courseList, courseObj.Course)
 		}
-
-		//log.Println("courseList................", courseList)
-
 		if err == io.EOF {
-			log.Println("courseObj.Course inside................", courseObj)
-			return srv.SendAndClose(&streamexp.ReadStoryVO{Course: "Python", TutorName: "Dobakur", Status: false})
+			return srv.SendAndClose(&streamexp.ReadStoryVO{Course: strings.Join(courseList," "), TutorName: "Dobakur", Status: false})
 		}
-
 		if err != nil {
 			log.Fatalf("Failed reciving data %v", err)
 			return err
 		}
-
 	}
-	//return nil
 }
 
+//FullStory service is used to display list of service
 func (r ReadServer) FullStory(srv streamexp.ReadMyStoryService_FullStoryServer) error {
+	log.Println("Getting inside of FullStory.................")
 	return status.Errorf(codes.Unimplemented, "method FullStory not implemented")
 }
 

@@ -85,3 +85,8 @@ func StoryStatus(ctx context.Context, client streamexp.ReadMyStoryServiceClient)
 	log.Printf("Story Status: %v", reply)
 	return err
 }
+
+//StoryStatus service is used to display list of service
+func FullStory(ctx context.Context, client streamexp.ReadMyStoryServiceClient) error {
+
+}

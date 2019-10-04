@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package overhttpexp;
+
+message NotesVO {
+    int32 id = 1;
+    string desc = 2;
+    bool status =3;
+}
+
+message RequestNotes {
+    string notesInfo = 1;
+    string contactInfo =2;
+    int32 priority =3;
+}
+
+service NotesService{
+    rpc PostStory (RequestNotes) returns (NotesVO);
+}
