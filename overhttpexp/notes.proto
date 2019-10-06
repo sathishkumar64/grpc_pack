@@ -6,6 +6,7 @@ message NotesVO {
     int32 id = 1;
     string desc = 2;
     bool status =3;
+    
 }
 
 message RequestNotes {
