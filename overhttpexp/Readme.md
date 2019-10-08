@@ -11,3 +11,31 @@
 EX:
 -    https://medium.com/@amsokol.com/tutorial-how-to-develop-go-grpc-microservice-with-http-rest-endpoint-middleware-kubernetes-daebb36a97e9
 -   https://github.com/grpc-ecosystem/grpc-gateway
+
+-   https://grpc-ecosystem.github.io/grpc-gateway/docs/grpcapiconfiguration.html (Nice)
+
+
+#### Validate YMAL File.
+-   http://www.yamllint.com/
+
+##### Generated commands
+
+protoc -I/usr/local/include -I. \
+  -I$GOPATH/src \
+  -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+  --go_out=plugins=grpc:. \
+  notes.proto
+
+
+protoc -I/usr/local/include -I. \
+  -I$GOPATH/src \
+  -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+  --grpc-gateway_out=logtostderr=true,grpc_api_configuration=notes.yaml:. \
+  notes.proto
+
+
+protoc -I/usr/local/include -I. \
+     -I$GOPATH/src \
+     -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+     --swagger_out=logtostderr=true,grpc_api_configuration=notes.yaml:. \
+     notes.proto
