@@ -42,6 +42,7 @@ protoc -I/usr/local/include -I. \
 
 
 #### Watch This
-
-- https://www.youtube.com/watch?v=F528FnxTo8E
 - https://www.youtube.com/watch?v=KyuFeiG3Y60
+
+#### Logger 
+- https://dev-journal.in/2019/05/27/adding-uber-go-zap-logger-to-golang-project/ (NICE)
